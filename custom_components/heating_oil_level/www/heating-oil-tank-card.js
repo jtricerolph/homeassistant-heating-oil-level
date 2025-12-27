@@ -29,8 +29,43 @@ class HeatingOilTankCard extends HTMLElement {
       show_reading_input: config.show_reading_input !== false,
       warning_level: config.warning_level || 25,
       critical_level: config.critical_level || 10,
+      tank_style: config.tank_style || 'standard',  // standard, wide, slim
+      tank_corners: config.tank_corners || 'rounded', // rounded, square
       ...config,
     };
+  }
+
+  getTankDimensions() {
+    // Returns {width, height, borderRadius, fillRadius} based on tank style
+    const style = this.config.tank_style;
+    const corners = this.config.tank_corners;
+
+    let width, height;
+    switch (style) {
+      case 'wide':
+        width = 180;
+        height = 140;
+        break;
+      case 'slim':
+        width = 80;
+        height = 220;
+        break;
+      default: // standard
+        width = 120;
+        height = 200;
+    }
+
+    let borderRadius, fillRadius;
+    if (corners === 'square') {
+      borderRadius = '4px';
+      fillRadius = '0 0 2px 2px';
+    } else {
+      // rounded
+      borderRadius = style === 'wide' ? '15px 15px 25px 25px' : '10px 10px 20px 20px';
+      fillRadius = style === 'wide' ? '0 0 20px 20px' : '0 0 16px 16px';
+    }
+
+    return { width, height, borderRadius, fillRadius };
   }
 
   set hass(hass) {
@@ -87,6 +122,9 @@ class HeatingOilTankCard extends HTMLElement {
       formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
+    // Get tank dimensions based on style
+    const tank = this.getTankDimensions();
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -118,10 +156,10 @@ class HeatingOilTankCard extends HTMLElement {
           margin: 20px 0;
         }
         .tank {
-          width: 120px;
-          height: 200px;
+          width: ${tank.width}px;
+          height: ${tank.height}px;
           border: 4px solid var(--primary-text-color, #333);
-          border-radius: 10px 10px 20px 20px;
+          border-radius: ${tank.borderRadius};
           position: relative;
           overflow: hidden;
           background: var(--secondary-background-color, #f5f5f5);
@@ -134,7 +172,7 @@ class HeatingOilTankCard extends HTMLElement {
           background: linear-gradient(to top, ${fillColor}, ${this.lightenColor(fillColor, 20)});
           height: ${Math.min(100, Math.max(0, percentage))}%;
           transition: height 0.5s ease-in-out;
-          border-radius: 0 0 16px 16px;
+          border-radius: ${tank.fillRadius};
         }
         .tank-fill::before {
           content: '';
@@ -340,6 +378,8 @@ class HeatingOilTankCard extends HTMLElement {
       title: 'Oil Tank',
       warning_level: 25,
       critical_level: 10,
+      tank_style: 'standard',
+      tank_corners: 'rounded',
     };
   }
 }
@@ -410,6 +450,23 @@ class HeatingOilTankCardEditor extends HTMLElement {
         <div class="hint">The number entity for manual readings</div>
       </div>
       <div class="form-group">
+        <label>Tank Style</label>
+        <select id="tank_style">
+          <option value="standard" ${(this._config.tank_style || 'standard') === 'standard' ? 'selected' : ''}>Standard (Vertical)</option>
+          <option value="wide" ${this._config.tank_style === 'wide' ? 'selected' : ''}>Wide (Rectangular)</option>
+          <option value="slim" ${this._config.tank_style === 'slim' ? 'selected' : ''}>Slim (Narrow)</option>
+        </select>
+        <div class="hint">Choose the shape that matches your tank</div>
+      </div>
+      <div class="form-group">
+        <label>Tank Corners</label>
+        <select id="tank_corners">
+          <option value="rounded" ${(this._config.tank_corners || 'rounded') === 'rounded' ? 'selected' : ''}>Rounded (Plastic)</option>
+          <option value="square" ${this._config.tank_corners === 'square' ? 'selected' : ''}>Square (Metal)</option>
+        </select>
+        <div class="hint">Rounded for plastic tanks, square for metal tanks</div>
+      </div>
+      <div class="form-group">
         <label>Warning Level (%)</label>
         <input type="number" id="warning_level" value="${this._config.warning_level || 25}" min="0" max="100">
       </div>
@@ -420,7 +477,7 @@ class HeatingOilTankCardEditor extends HTMLElement {
     `;
 
     // Add event listeners
-    ['title', 'entity', 'level_entity', 'reading_entity', 'warning_level', 'critical_level'].forEach(id => {
+    ['title', 'entity', 'level_entity', 'reading_entity', 'tank_style', 'tank_corners', 'warning_level', 'critical_level'].forEach(id => {
       const input = this.shadowRoot.getElementById(id);
       if (input) {
         input.addEventListener('change', (e) => {
