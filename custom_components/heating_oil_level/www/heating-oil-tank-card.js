@@ -58,8 +58,12 @@ class HeatingOilTankCard extends HTMLElement {
     }
 
     const percentage = parseFloat(state.state) || 0;
-    const levelState = this.config.level_entity ? this._hass.states[this.config.level_entity] : null;
-    const level = levelState ? parseFloat(levelState.state) : null;
+    // Get level from attribute first, fall back to separate entity
+    let level = state.attributes.current_level;
+    if (level === undefined || level === null) {
+      const levelState = this.config.level_entity ? this._hass.states[this.config.level_entity] : null;
+      level = levelState ? parseFloat(levelState.state) : null;
+    }
     const capacity = state.attributes.tank_capacity || 1000;
     const lastReading = state.attributes.last_reading;
     const lastReadingDate = state.attributes.last_reading_date;

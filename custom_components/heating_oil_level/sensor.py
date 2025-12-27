@@ -204,6 +204,18 @@ class OilPercentageSensor(OilLevelBaseSensor):
         percentage = (current_level / self._tank_capacity) * 100
         return round(min(100, max(0, percentage)), 1)
 
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return additional state attributes."""
+        return {
+            ATTR_LAST_READING: self._data.get("last_reading"),
+            ATTR_LAST_READING_DATE: self._data.get("last_reading_date"),
+            ATTR_ENERGY_AT_READING: self._data.get("energy_at_reading"),
+            ATTR_OIL_CONSUMED: self._calculate_oil_consumed(),
+            ATTR_TANK_CAPACITY: self._tank_capacity,
+            "current_level": self._calculate_current_level(),
+        }
+
 
 class OilConsumedSensor(OilLevelBaseSensor):
     """Sensor for oil consumed since last reading."""
