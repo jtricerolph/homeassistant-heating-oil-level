@@ -37,7 +37,50 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Set up the Heating Oil Level component."""
     # Copy the card JS to the www folder
     await hass.async_add_executor_job(_copy_card_to_www, hass)
+
+    # Register the card as a Lovelace resource
+    hass.async_create_task(_async_register_card_resource(hass))
+
     return True
+
+
+async def _async_register_card_resource(hass: HomeAssistant) -> None:
+    """Register the card JS as a Lovelace resource."""
+    try:
+        # Wait for lovelace to be ready
+        if "lovelace" not in hass.data:
+            # Lovelace not ready yet, try again later
+            from homeassistant.helpers.event import async_call_later
+            async_call_later(hass, 5, lambda _: hass.async_create_task(_async_register_card_resource(hass)))
+            return
+
+        # Check if resource already exists
+        resources = hass.data["lovelace"].get("resources")
+        if resources is None:
+            _LOGGER.debug("Lovelace resources not available")
+            return
+
+        # Check existing resources
+        existing = await resources.async_get_info()
+        for resource in existing:
+            if CARD_JS_URL in resource.get("url", ""):
+                _LOGGER.debug("Card resource already registered")
+                return
+
+        # Add the resource
+        await resources.async_create_item({
+            "res_type": "module",
+            "url": CARD_JS_URL,
+        })
+        _LOGGER.info("Registered heating oil tank card as Lovelace resource")
+
+    except Exception as err:
+        _LOGGER.warning(
+            "Could not auto-register card resource. Please add manually: "
+            "Settings > Dashboards > Resources > Add '%s' as JavaScript Module. Error: %s",
+            CARD_JS_URL,
+            err
+        )
 
 
 def _copy_card_to_www(hass: HomeAssistant) -> None:
