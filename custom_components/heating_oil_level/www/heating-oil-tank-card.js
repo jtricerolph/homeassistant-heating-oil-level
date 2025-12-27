@@ -152,8 +152,9 @@ class HeatingOilTankCard extends HTMLElement {
         .tank-container {
           display: flex;
           justify-content: center;
-          align-items: flex-end;
+          align-items: stretch;
           margin: 20px 0;
+          gap: 8px;
         }
         .tank {
           width: ${tank.width}px;
@@ -184,15 +185,12 @@ class HeatingOilTankCard extends HTMLElement {
           background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
         }
         .tank-marks {
-          position: absolute;
-          top: 0;
-          right: -30px;
-          height: 100%;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
           font-size: 10px;
           color: var(--secondary-text-color, #666);
+          padding: 4px 0;
         }
         .percentage-display {
           position: absolute;
