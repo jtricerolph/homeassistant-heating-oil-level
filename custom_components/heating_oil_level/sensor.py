@@ -209,8 +209,7 @@ class OilConsumedSensor(OilLevelBaseSensor):
     """Sensor for oil consumed since last reading."""
 
     _attr_native_unit_of_measurement = UnitOfVolume.LITERS
-    _attr_device_class = SensorDeviceClass.VOLUME_STORAGE
-    _attr_state_class = SensorStateClass.TOTAL_INCREASING
+    _attr_state_class = SensorStateClass.MEASUREMENT
     _attr_icon = "mdi:fire"
     _attr_name = "Oil Consumed Since Reading"
 

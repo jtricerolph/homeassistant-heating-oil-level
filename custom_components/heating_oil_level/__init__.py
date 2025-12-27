@@ -54,8 +54,10 @@ async def _async_register_card_resource(hass: HomeAssistant) -> None:
             async_call_later(hass, 5, lambda _: hass.async_create_task(_async_register_card_resource(hass)))
             return
 
-        # Check if resource already exists
-        resources = hass.data["lovelace"].get("resources")
+        lovelace_data = hass.data["lovelace"]
+
+        # Use the new attribute access (not .get())
+        resources = getattr(lovelace_data, "resources", None)
         if resources is None:
             _LOGGER.debug("Lovelace resources not available")
             return
@@ -63,7 +65,8 @@ async def _async_register_card_resource(hass: HomeAssistant) -> None:
         # Check existing resources
         existing = await resources.async_get_info()
         for resource in existing:
-            if CARD_JS_URL in resource.get("url", ""):
+            url = resource.get("url", "") if isinstance(resource, dict) else getattr(resource, "url", "")
+            if CARD_JS_URL in url:
                 _LOGGER.debug("Card resource already registered")
                 return
 
