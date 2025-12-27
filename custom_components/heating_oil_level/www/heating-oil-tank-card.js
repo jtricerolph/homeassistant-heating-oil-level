@@ -348,7 +348,7 @@ class HeatingOilTankCardEditor extends HTMLElement {
   }
 
   setConfig(config) {
-    this._config = config;
+    this._config = config || {};
     this.render();
   }
 
@@ -358,7 +358,7 @@ class HeatingOilTankCardEditor extends HTMLElement {
   }
 
   render() {
-    if (!this._hass) return;
+    if (!this._hass || !this._config) return;
 
     this.shadowRoot.innerHTML = `
       <style>
