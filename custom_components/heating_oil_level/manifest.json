@@ -1,0 +1,12 @@
+{
+  "domain": "heating_oil_level",
+  "name": "Heating Oil Level",
+  "codeowners": ["@jtricerolph"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/jtricerolph/homeassistant-heating-oil-level",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/jtricerolph/homeassistant-heating-oil-level/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

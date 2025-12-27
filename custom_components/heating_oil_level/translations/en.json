@@ -1,0 +1,59 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Heating Oil Level Monitor",
+        "description": "Configure your oil tank monitoring by selecting your boiler's energy sensor.",
+        "data": {
+          "energy_entity": "Boiler Energy Sensor",
+          "tank_capacity": "Tank Capacity (litres)",
+          "kwh_per_litre": "Energy per Litre (kWh/L)"
+        },
+        "data_description": {
+          "energy_entity": "Select the sensor that tracks your boiler's total energy consumption in kWh",
+          "tank_capacity": "The total capacity of your oil tank in litres",
+          "kwh_per_litre": "Energy generated per litre of oil (default: 10.35 kWh/L)"
+        }
+      }
+    },
+    "error": {
+      "entity_not_found": "The selected entity could not be found"
+    },
+    "abort": {
+      "already_configured": "This energy sensor is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Heating Oil Level Options",
+        "description": "Adjust your oil tank monitoring settings.",
+        "data": {
+          "tank_capacity": "Tank Capacity (litres)",
+          "kwh_per_litre": "Energy per Litre (kWh/L)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "oil_level": {
+        "name": "Oil Level"
+      },
+      "oil_percentage": {
+        "name": "Oil Level Percentage"
+      },
+      "oil_consumed": {
+        "name": "Oil Consumed Since Reading"
+      },
+      "oil_remaining": {
+        "name": "Oil Remaining"
+      }
+    },
+    "number": {
+      "manual_reading": {
+        "name": "Manual Oil Reading"
+      }
+    }
+  }
+}
