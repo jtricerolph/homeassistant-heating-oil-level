@@ -118,7 +118,7 @@ class HeatingOilLevelOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(title="", data=user_input)
 
         # Merge data and options (options take precedence)
-        current_config = {**self.config_entry.data, **self.config_entry.options}
+        current_config = {**self.config_entry.data, **(self.config_entry.options or {})}
 
         data_schema = vol.Schema(
             {

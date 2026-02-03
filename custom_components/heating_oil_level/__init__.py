@@ -122,7 +122,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         }
 
     # Merge entry.data with entry.options (options take precedence)
-    config_data = {**entry.data, **entry.options}
+    config_data = {**entry.data, **(entry.options or {})}
 
     # Store configuration and data
     hass.data[DOMAIN][entry.entry_id] = {
