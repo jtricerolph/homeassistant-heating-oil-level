@@ -121,14 +121,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             "energy_at_reading": None,
         }
 
+    # Merge entry.data with entry.options (options take precedence)
+    config_data = {**entry.data, **entry.options}
+
     # Store configuration and data
     hass.data[DOMAIN][entry.entry_id] = {
         "store": store,
         "data": stored_data,
         "config": {
-            "energy_entity": entry.data[CONF_ENERGY_ENTITY],
-            "tank_capacity": entry.data.get(CONF_TANK_CAPACITY, 1000),
-            "kwh_per_litre": entry.data.get(CONF_KWH_PER_LITRE, DEFAULT_KWH_PER_LITRE),
+            "energy_entity": config_data[CONF_ENERGY_ENTITY],
+            "tank_capacity": config_data.get(CONF_TANK_CAPACITY, 1000),
+            "kwh_per_litre": config_data.get(CONF_KWH_PER_LITRE, DEFAULT_KWH_PER_LITRE),
         },
     }
 

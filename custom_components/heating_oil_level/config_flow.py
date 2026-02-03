@@ -114,18 +114,17 @@ class HeatingOilLevelOptionsFlow(config_entries.OptionsFlow):
     ) -> FlowResult:
         """Manage the options."""
         if user_input is not None:
-            # Update the config entry with new data
-            new_data = {**self.config_entry.data, **user_input}
-            self.hass.config_entries.async_update_entry(
-                self.config_entry, data=new_data
-            )
+            # Return options data (don't modify entry.data)
             return self.async_create_entry(title="", data=user_input)
+
+        # Merge data and options (options take precedence)
+        current_config = {**self.config_entry.data, **self.config_entry.options}
 
         data_schema = vol.Schema(
             {
                 vol.Required(
                     CONF_TANK_CAPACITY,
-                    default=self.config_entry.data.get(
+                    default=current_config.get(
                         CONF_TANK_CAPACITY, DEFAULT_TANK_CAPACITY
                     ),
                 ): selector.NumberSelector(
@@ -139,7 +138,7 @@ class HeatingOilLevelOptionsFlow(config_entries.OptionsFlow):
                 ),
                 vol.Required(
                     CONF_KWH_PER_LITRE,
-                    default=self.config_entry.data.get(
+                    default=current_config.get(
                         CONF_KWH_PER_LITRE, DEFAULT_KWH_PER_LITRE
                     ),
                 ): selector.NumberSelector(
